@@ -1,95 +1,68 @@
-
+import { users } from "../data/users.js"
+import DataError from "../models/dataError.js"
 
 
 export default class UserService {
 
     constructor(loggerService){
-        this.users = []
-        this.loggerService = loggerService
-    }
-
-    add(user) {
-        this.users.push(user)
-        this.loggerService.log(user)
-    }
-
-    list() {
-        return this.users
-    }
-
-
-    getById(id) {
-        return this.users.find(u=>u.id===id)
-    }
-}
-
-
-
-/*import { users } from "../data/users.js"
-import DataError from "../models/dataError.js"
-
-export default class UserService {
-    constructor(loggerService) {
-        this.employees = []
         this.customers = []
+        this.employees = []
         this.errors = []
         this.loggerService = loggerService
+       
     }
 
-    load() {
+    load(){
         for (const user of users) {
-            switch (user.type) {
+        switch (user.type) {
                 case "customer":
-                    if (!this.checkCustomerValidityForErrors(user)) {
-                        this.customers.push(user)
-                    }
-                    break;
+                    if(!this.checkCustomerValidityForErrors(user))
+                    this.customers.push(user)
+                     break;  
                 case "employee":
-                    if (!this.checkEmployeeValidityForErrors(user)) {
-                        this.employees.push(user)
-                    }
-                    break;
+                    if(!this.checkEmployeeValidityForErrors(user))
+                    this.employees.push(user)
+                     break;
+            
                 default:
-                    this.errors.push(new DataError("Wrong user type", user))
+                    this.errors.push(new DataError("Wrong user type",user))
                     break;
             }
         }
     }
-
-    //formik-yup
-    checkCustomerValidityForErrors(user) {
+    //user için kullanıcı tarafından verilmesi gereken zorunlu alanlar sorgulaması
+    //checkCustomerValidity=müşterinin doğruluğunu kontrol et
+    checkCustomerValidityForErrors(user){
+        //split bir array döndürür neye göre boşluk verdik ona göre öğeleri seçer
         let requiredFields = "id firstName lastName age city".split(" ")
         let hasErrors = false
         for (const field of requiredFields) {
             if (!user[field]) {
                 hasErrors = true
-                this.errors.push(
-                    new DataError(`Validation problem. ${field} is required`, user))
+                this.errors.push(new DataError(`Validation problem. ${field} is required`,user))
             }
         }
-
-        if (Number.isNaN(Number.parseInt(+user.age))) {
+        //user yaşını sayıya çevirdiğimde isNaN yani bu bir sayı değilse hata ver
+        if(Number.isNaN(Number.parseInt(+user.age))){
             hasErrors = true
-            this.errors.push(new DataError(`Validation problem. ${user.age} is not a number`, user))
+            this.errors.push(new DataError(`Validation problem. ${user.age} is not a number`,user))
         }
-
         return hasErrors
     }
 
-    checkEmployeeValidityForErrors(user) {
+    checkEmployeeValidityForErrors(user){
+        //split bir array döndürür neye göre boşluk verdik ona göre öğeleri seçer
         let requiredFields = "id firstName lastName age city salary".split(" ")
         let hasErrors = false
         for (const field of requiredFields) {
             if (!user[field]) {
                 hasErrors = true
-                this.errors.push(
-                    new DataError(`Validation problem. ${field} is required`, user))
+                this.errors.push(new DataError(`Validation problem. ${field} is required`,user))
             }
         }
-
-        if (Number.isNaN(Number.parseInt(user.age))) {
+        if(Number.isNaN(Number.parseInt(user.age))){
             hasErrors = true
-            this.errors.push(new DataError(`Validation problem. ${user.age} is not a number`, user))
+            this.errors.push(new DataError(`Validation problem. ${user.age} is not a number`,user))
         }
         return hasErrors
     }
@@ -113,15 +86,16 @@ export default class UserService {
         }
         this.loggerService.log(user)
     }
+    
 
     listCustomers() {
         return this.customers
     }
 
     getCustomerById(id) {
-        return this.customers.find(u=>u.id ===id)
+        return this.customers.find(u=>u.id===id)
     }
-
+    
     getCustomersSorted(){
         return this.customers.sort((customer1,customer2)=>{
             if(customer1.firstName>customer2.firstName){
@@ -133,5 +107,10 @@ export default class UserService {
             }
         })
     }
+}
 
-}*/
+
+
+
+
+
